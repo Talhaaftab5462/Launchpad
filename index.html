@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Launchpad</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+
+      body {
+        background: #080c12;
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        color: #c8dce8;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Custom scrollbars ── */
+      ::-webkit-scrollbar { width: 4px; height: 4px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #1a2d45; border-radius: 2px; }
+      ::-webkit-scrollbar-thumb:hover { background: #00d4ff44; }
+
+      /* ── RSI scanline overlay ── */
+      body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 212, 255, 0.012) 2px,
+          rgba(0, 212, 255, 0.012) 4px
+        );
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* ── Angular clip paths ── */
+      .clip-tl { clip-path: polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%, 0% 12px); }
+      .clip-tr { clip-path: polygon(0% 0%, calc(100% - 12px) 0%, 100% 12px, 100% 100%, 0% 100%); }
+      .clip-br { clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%); }
+      .clip-bl { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 12px 100%, 0% calc(100% - 12px)); }
+      .clip-card { clip-path: polygon(16px 0%, 100% 0%, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0% 100%, 0% 16px); }
+      .clip-sm { clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px); }
+
+      /* ── Glow animations ── */
+      @keyframes glow-pulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+      @keyframes scan-line { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+      @keyframes flicker { 0%,98%,100%{opacity:1} 99%{opacity:0.94} }
+      @keyframes data-scroll { 0%{transform:translateY(0)} 100%{transform:translateY(-50%)} }
+      @keyframes border-glow { 0%,100%{box-shadow:0 0 8px rgba(0,212,255,0.2)} 50%{box-shadow:0 0 20px rgba(0,212,255,0.4)} }
+      @keyframes spin { to { transform: rotate(360deg) } }
+      @keyframes fade-up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+      @keyframes slide-in { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+
+      .glow-pulse { animation: glow-pulse 2s ease-in-out infinite; }
+      @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
+      @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+      .skeleton { animation: pulse 1.5s ease-in-out infinite; }
+      .skeleton-shimmer { background: linear-gradient(90deg, #0d1520 25%, #162030 50%, #0d1520 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+      .flicker { animation: flicker 8s ease-in-out infinite; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
