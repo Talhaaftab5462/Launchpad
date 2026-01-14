@@ -1,0 +1,85 @@
+{
+  "name": "launchpad-game-launcher",
+  "version": "1.0.0",
+  "description": "A modern desktop game launcher",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron": "electron .",
+    "electron-dev": "concurrently --kill-others \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "dist:win": "vite build && electron-builder --win --x64",
+    "dist:mac": "vite build && electron-builder --mac",
+    "dist:linux": "vite build && electron-builder --linux"
+  },
+  "dependencies": {
+    "discord-rpc": "^4.0.1",
+    "framer-motion": "^11.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^2.12.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.0",
+    "electron": "^41.2.0",
+    "electron-builder": "^26.8.1",
+    "vite": "^7.3.2",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.launchpad.app",
+    "productName": "Launchpad",
+    "copyright": "Copyright © 2025 Launchpad",
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "electron/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "electron/icon.ico",
+      "uninstallerIcon": "electron/icon.ico",
+      "installerHeaderIcon": "electron/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Launchpad",
+      "deleteAppDataOnUninstall": false,
+      "runAfterFinish": true
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "electron/icon.ico",
+      "category": "public.app-category.games"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "electron/icon.ico",
+      "category": "Game"
+    },
+    "extraResources": [],
+    "asar": true,
+    "asarUnpack": [
+      "electron/icon.ico"
+    ]
+  }
+}
