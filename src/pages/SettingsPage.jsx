@@ -413,7 +413,7 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
       </Section>
 
       <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 10, color: C.textDim, textAlign: 'center', paddingBottom: 8, letterSpacing: '0.1em' }}>
-        LAUNCHPAD v1.0 // RSI EDITION
+        LAUNCHPAD v1.0.1 // RSI EDITION
       </div>
     </motion.div>
   )
