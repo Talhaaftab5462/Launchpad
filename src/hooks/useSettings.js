@@ -6,7 +6,7 @@ const SECURE_KEYS = new Set(['rawgApiKey', 'igdbClientId', 'igdbClientSecret', '
 const isElectron = typeof window !== 'undefined' && typeof window.secureStorage !== 'undefined'
 
 const DEFAULTS = {
-  accentColor:          '#3b82f6',
+  accentColor:          (window.__INITIAL_ACCENT__ ?? '#3b82f6'),
   sidebarCollapsed:     false,
   defaultView:          'grid',
   density:              'comfortable',

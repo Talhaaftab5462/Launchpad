@@ -20,7 +20,7 @@ const MiniTooltip = ({ active, payload }) => {
 function HeroCard({ game, onSelect, accent, launcher }) {
   if (!game) return (
     <Panel style={{ height: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12 }} clip>
-      <Icon name="gamepad" size={40} color={C.textDim} />
+      <img src="/launchpad-logo-circle.png" width={44} height={44} style={{ opacity: 0.35 }} alt="" />
       <div style={{ fontFamily: "'Rajdhani',sans-serif", fontSize: 14, color: C.textDim, letterSpacing: '0.1em', textTransform: 'uppercase' }}>No Recent Activity</div>
     </Panel>
   )

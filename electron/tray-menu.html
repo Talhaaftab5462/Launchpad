@@ -67,12 +67,8 @@
 <div class="menu">
   <div class="corner"></div>
   <div class="header">
-    <div class="logo-box">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/>
-        <line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/>
-        <path d="M17.32 5H6.68a4 4 0 00-3.978 3.59l-1.37 12.18A3 3 0 004.32 24h15.36a3 3 0 002.99-3.22l-1.37-12.18A4 4 0 0017.32 5z"/>
-      </svg>
+    <div class="logo-box" id="logoBox">
+      <!-- Logo will be injected here by script -->
     </div>
     <div class="logo-text-wrap">
       <div class="logo-title">Launchpad</div>
@@ -95,10 +91,28 @@
   </div>
 </div>
 <script>
+  // Load logo.svg dynamically with accent color
+  const logoBoxEl = document.getElementById('logoBox')
   const params = new URLSearchParams(window.location.search)
   const accent = params.get('accent') || '#3b82f6'
   const gameRunning = params.get('gameRunning') === '1'
+  
+  fetch('../public/logo.svg')
+    .then(res => res.text())
+    .then(svg => {
+      // Replace accent color with the current accent
+      const updated = svg.replace(/#c07cff/gi, accent)
+      // Create a wrapper that scales it to 13px
+      logoBoxEl.innerHTML = `<svg viewBox="0 0 580.032 580.032" style="width: 13px; height: 13px;">${updated.match(/<svg[^>]*>(.*)<\/svg>/is)[1]}</svg>`
+    })
+    .catch(err => {
+      console.error('Failed to load logo:', err)
+      // Fallback to gamepad icon
+      logoBoxEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 00-3.978 3.59l-1.37 12.18A3 3 0 004.32 24h15.36a3 3 0 002.99-3.22l-1.37-12.18A4 4 0 0017.32 5z"/></svg>`
+    })
+  
   document.documentElement.style.setProperty('--accent', accent)
+
   if (gameRunning) document.getElementById('runBadge').classList.add('on')
 
   const PAGES = [

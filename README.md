@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="build/icon.ico" width="80" alt="Launchpad Logo" />
+<img src="public/launchpad-logo-circle.png" width="90" alt="Launchpad Logo" />
 
 # Launchpad
 
@@ -14,7 +14,7 @@
 
 *A Playnite-inspired game library manager with a cyberpunk/military HUD aesthetic*
 
-![Launchpad Screenshot](https://i.postimg.cc/02kC2BQZ/Launchpad.png)
+![Launchpad Screenshot](https://i.postimg.cc/fbZYcy6f/home.png)
 
 </div>
 
@@ -24,7 +24,7 @@
 
 Launchpad is a desktop game launcher that unifies multiple gaming platforms into a single, polished interface. Built as an Electron + React SPA, it provides a premium native desktop experience with deep platform integrations, real-time playtime tracking, Discord Rich Presence, and a fully themed system tray.
 
-The UI is inspired by Roberts Space Industries' (RSI) launcher, featuring a deep space color palette, angular clip-path components, scanline overlays, and accent-color theming throughout.
+The UI is inspired by Roberts Space Industries' (RSI) launcher, featuring a deep space color palette, angular clip-path components, scanline overlays, and accent-color theming throughout, including the tray icon, which recolors dynamically to match whatever accent you've set.
 
 ---
 
@@ -75,10 +75,12 @@ The UI is inspired by Roberts Space Industries' (RSI) launcher, featuring a deep
 - System tray with custom-styled right-click popup menu
 - Close-to-tray when a game is running (balloon notification on Windows)
 - Left-click tray icon to show/hide launcher
-- Tray menu accent color synced with current theme
+- Tray icon recolors to match the current accent setting in real time
+- SVG logo rendered and tinted dynamically via sharp, no static assets for each color
 
 ### ⚙️ Settings & Customisation
-- Accent color picker (6 presets + custom hex): affects entire UI including tray
+- Accent color picker (6 presets + custom hex): affects entire UI including tray icon
+- Accent color applied immediately on launch with no flash of the default color
 - Layout density options
 - Encrypted API key storage via Electron `safeStorage`
 - Keyboard shortcuts: `Ctrl+K` command palette, `Escape` to close modals
@@ -97,6 +99,7 @@ The UI is inspired by Roberts Space Industries' (RSI) launcher, featuring a deep
 | Animations | [Framer Motion](https://www.framer.com/motion/) |
 | Charts | [Recharts](https://recharts.org) |
 | Icons | [Lucide React](https://lucide.dev) |
+| Image processing | [sharp](https://sharp.pixelplumbing.com) (icon rendering + tinting) |
 | Discord | [discord-rpc](https://github.com/nicehash/discord-rpc) |
 | Installer | [electron-builder](https://www.electron.build) NSIS |
 
@@ -109,6 +112,7 @@ launchpad/
 ├── electron/
 │   ├── main.js              # Main process, IPC, tray, game launcher
 │   ├── preload.js           # Context bridge, exposes safe IPC to renderer
+│   ├── icon-generator.js    # Dynamic icon rendering + accent tinting via sharp
 │   ├── tray-menu.html       # Custom styled tray popup (standalone HTML)
 │   ├── tray-preload.js      # Preload for tray popup window
 │   └── icon.ico             # App icon (tray, taskbar, installer)
@@ -117,13 +121,16 @@ launchpad/
 │   ├── components/
 │   │   ├── layout/          # Sidebar, TopBar
 │   │   ├── library/         # GameCard, AddGameModal, BulkActionsBar
-│   │   └── ui/              # RSI design system, Toast, Modal, Badges, etc.
+│   │   └── ui/              # RSI design system, Toast, Modal, Badges, Logo, etc.
 │   ├── data/
 │   │   └── constants.js     # PLATFORM_META, STATUS_META, colour tokens
 │   ├── hooks/               # useLibrary, useGameLauncher, useSteamFriends, etc.
 │   ├── pages/               # One component per page/view
 │   ├── App.jsx              # Root: routing state, global hooks, tray sync
 │   └── main.jsx             # React entry point
+├── public/
+│   ├── logo.svg                    # SVG logo (accent-colored at runtime)
+│   └── launchpad-logo-circle.png   # Circle icon used for tray + taskbar
 ├── build/
 │   └── icon.ico             # electron-builder resource
 ├── index.html
@@ -161,7 +168,7 @@ npm run electron-dev
 npm run dist:win
 ```
 
-Output: `release/Launchpad Setup 1.0.0.exe`
+Output: `release/Launchpad Setup 1.0.2.exe`
 
 The installer creates desktop and Start Menu shortcuts, allows custom install directory, and does not require admin privileges by default.
 
@@ -228,7 +235,6 @@ Pull requests are welcome. For major changes please open an issue first.
 
 - **[Playnite](https://playnite.link)**: open-source game library manager, primary inspiration
 - **[Roberts Space Industries](https://robertsspaceindustries.com)**: UI/UX aesthetic inspiration
-- **[Basic iOS 14 App Icon Pack](https://www.pinterest.com/pin/719801952937960261/)**: launcher application icon
 - **[Lucide Icons](https://lucide.dev)**: UI icon set
 - **[Rajdhani & Share Tech Mono](https://fonts.google.com)**: typography via Google Fonts
 

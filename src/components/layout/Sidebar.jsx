@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import Icon from '../ui/Icon'
+import Logo from '../ui/Logo'
 import { C, RsiDivider } from '../ui/RSI'
 import { formatTime } from '../library/GameCard'
 
@@ -37,7 +38,7 @@ export default function Sidebar({ current, onNav, collapsed, onToggle, accent = 
       {/* Logo */}
       <div style={{ padding: collapsed ? '16px 0' : '16px 18px', display: 'flex', alignItems: 'center', gap: 12, borderBottom: `1px solid ${C.border}`, justifyContent: collapsed ? 'center' : 'flex-start', minHeight: 56 }}>
         <div style={{ width: 26, height: 26, background: `linear-gradient(135deg, ${accent}22, ${accent}08)`, border: `1px solid ${accent}66`, clipPath: 'polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: `0 0 12px ${accent}33` }}>
-          <Icon name="gamepad" size={14} color={accent} />
+          <Logo size={14} accent={accent} />
         </div>
         {!collapsed && (
           <div>

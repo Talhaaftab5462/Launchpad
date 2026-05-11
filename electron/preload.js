@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   maximize:   () => ipcRenderer.send('win-maximize'),
   close:      () => ipcRenderer.send('win-close'),
   isElectron: true,
+  readLogoSvg: () => ipcRenderer.invoke('read-logo-svg'),
 
   // Tray
   setGameRunning:  (isRunning) => ipcRenderer.send('tray-set-game-running', isRunning),

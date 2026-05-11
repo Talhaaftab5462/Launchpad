@@ -228,10 +228,10 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
       </Section>
 
       {/* Discord Integration */}
-      <Section title="Discord Integration" accent="#5865f2">
+      <Section title="Discord Integration" accent={accent}>
         {/* Setup guide */}
-        <div style={{ padding:'10px 16px', borderBottom:`1px solid ${C.border}`, background:'#5865f208' }}>
-          <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:10, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:'#5865f2', marginBottom:8 }}>SETUP GUIDE</div>
+        <div style={{ padding:'10px 16px', borderBottom:`1px solid ${C.border}`, background:`${accent}08` }}>
+          <div style={{ fontFamily:"'Rajdhani',sans-serif", fontSize:10, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:accent, marginBottom:8 }}>SETUP GUIDE</div>
           {[
             ['1', 'discord.com/developers → New Application → name it "Launchpad"'],
             ['2', 'Copy the Application ID → paste it below as Client ID'],
@@ -239,7 +239,7 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
             ['4', 'Save, restart Launchpad - Done. No OAuth, no bot, no invite needed.'],
           ].map(([n, text]) => (
             <div key={n} style={{ display:'flex', gap:8, marginBottom:5, alignItems:'flex-start' }}>
-              <div style={{ width:16, height:16, background:'#5865f222', border:'1px solid #5865f244', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Rajdhani',sans-serif", fontSize:10, fontWeight:700, color:'#5865f2', flexShrink:0 }}>{n}</div>
+              <div style={{ width:16, height:16, background:`${accent}22`, border:`1px solid ${accent}44`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:"'Rajdhani',sans-serif", fontSize:10, fontWeight:700, color:accent, flexShrink:0 }}>{n}</div>
               <span style={{ fontFamily:"'Share Tech Mono',monospace", fontSize:10, color:C.textDim, lineHeight:1.5 }}>{text}</span>
             </div>
           ))}
@@ -253,7 +253,7 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
           <div style={{ flex: 1 }}>
             {discord?.connected && discord?.discordUser ? (
               <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 11, color: C.text }}>
-                Connected as <span style={{ color: '#5865f2', fontWeight: 700 }}>{discord?.discordUser?.username}</span>
+                Connected as <span style={{ color: accent, fontWeight: 700 }}>{discord?.discordUser?.username}</span>
               </div>
             ) : discord?.noClientId ? (
               <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 11, color: '#f59e0b' }}>
@@ -268,20 +268,20 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
             )}
           </div>
           {!discord?.connected && !discord?.noClientId && settings.discordRPC !== false && (
-            <RsiButton onClick={() => discord?.reconnect?.()} variant="ghost" size="sm" accent="#5865f2">RETRY</RsiButton>
+            <RsiButton onClick={() => discord?.reconnect?.()} variant="ghost" size="sm" accent={accent}>RETRY</RsiButton>
           )}
         </div>
 
         <Row label="Rich Presence" desc="Show current game, playtime, and library stats in your Discord status.">
-          <Toggle value={settings.discordRPC !== false} onChange={v => onUpdate('discordRPC', v)} accent="#5865f2" />
+          <Toggle value={settings.discordRPC !== false} onChange={v => onUpdate('discordRPC', v)} accent={accent} />
         </Row>
 
         <Row label="Show Game Name" desc="Display the game title in your Discord status while playing.">
-          <Toggle value={settings.discordShowGame !== false} onChange={v => onUpdate('discordShowGame', v)} accent="#5865f2" />
+          <Toggle value={settings.discordShowGame !== false} onChange={v => onUpdate('discordShowGame', v)} accent={accent} />
         </Row>
 
         <Row label="Show Playtime" desc="Show how long you've played a game in your Discord status.">
-          <Toggle value={settings.discordShowPlaytime !== false} onChange={v => onUpdate('discordShowPlaytime', v)} accent="#5865f2" />
+          <Toggle value={settings.discordShowPlaytime !== false} onChange={v => onUpdate('discordShowPlaytime', v)} accent={accent} />
         </Row>
 
         {/* Discord App Client ID */}
@@ -309,7 +309,7 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
 
         <Row label="Back Up Library Now" desc="Send an encrypted snapshot to your Discord webhook. Restoreable any time." last>
           <div style={{ display: 'flex', gap: 8 }}>
-            <RsiButton variant="primary" size="sm" accent="#5865f2" onClick={async () => {
+            <RsiButton variant="primary" size="sm" accent={accent} onClick={async () => {
               if (!settings.discordWebhook) { toast('Set a Discord webhook URL first', 'error'); return }
               try {
                 const r = await window.storage.get('launchpad_games_v2')
@@ -320,7 +320,7 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
                 else toast('Backup failed: ' + result.error, 'error')
               } catch(e) { toast('Backup error: ' + e.message, 'error') }
             }}>
-              <Icon name="save" size={12} color="#5865f2" /> BACK UP NOW
+              <Icon name="save" size={12} color={accent} /> BACK UP NOW
             </RsiButton>
           </div>
         </Row>
@@ -413,7 +413,7 @@ export default function SettingsPage({ settings, onUpdate, onClearLibrary, accen
       </Section>
 
       <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 10, color: C.textDim, textAlign: 'center', paddingBottom: 8, letterSpacing: '0.1em' }}>
-        LAUNCHPAD v1.0.1 // RSI EDITION
+        LAUNCHPAD v1.0.2 // RSI EDITION
       </div>
     </motion.div>
   )

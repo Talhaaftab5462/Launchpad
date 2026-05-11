@@ -5,6 +5,7 @@ const { spawn } = require('child_process')
 const https = require('https')
 const http = require('http')
 const url = require('url')
+const { getTrayNativeImage, getAppNativeImage } = require('./icon-generator')
 
 const isDev = !fs.existsSync(path.join(__dirname, '../dist/index.html'))
 
@@ -57,6 +58,14 @@ ipcMain.handle('storage-delete', (_, k)    => { delete store[k]; saveStorage(sto
 ipcMain.handle('storage-list',   (_, p)    => ({ keys: Object.keys(store).filter(k => !p || k.startsWith(p)) }))
 
 // Uses discord-rpc package. Requires user to have Discord open.
+// Serve logo.svg to renderer — works both in dev and packaged
+ipcMain.handle('read-logo-svg', () => {
+  const logoPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'logo.svg')
+    : path.join(__dirname, '../public/logo.svg')
+  try { return fs.readFileSync(logoPath, 'utf8') } catch(e) { return null }
+})
+
 const DISCORD_CLIENT_ID = '1234567890123456' // Replace with your Discord App client ID from discord.com/developers
 
 let discordClient     = null
@@ -1377,6 +1386,39 @@ function getTrayIconPath() {
   return null
 }
 
+async function updateTrayIcon() {
+  const logoPath = app.isPackaged
+  ? path.join(process.resourcesPath, 'logo.svg')   // packaged: resources/logo.svg
+  : path.join(__dirname, '../public/logo.svg')       // dev: public/logo.svg
+  
+  if (!fs.existsSync(logoPath)) {
+    console.warn('[Icon] logo.svg not found at', logoPath)
+    return
+  }
+ 
+  try {
+    // Tray icon — flat (no glow), multi-res
+    if (tray && !tray.isDestroyed()) {
+      const trayIcon = await getTrayNativeImage(logoPath, currentAccentHex)
+      if (trayIcon) tray.setImage(trayIcon)
+    }
+ 
+    // Taskbar icon is handled via accent .ico written to userData and set at startup.
+    // win.setIcon() at runtime is ignored by Windows for the taskbar button.
+    // For non-Windows platforms, update window icon directly.
+    if (process.platform !== 'win32') {
+      const appIcon = await getAppNativeImage(logoPath, currentAccentHex)
+      if (appIcon && win && !win.isDestroyed()) {
+        win.setIcon(appIcon)
+        if (process.platform === 'linux') app.setIcon(appIcon)
+      }
+    }
+  } catch (err) {
+    console.error('[Icon] updateTrayIcon failed:', err.message)
+  }
+}
+
+
 function createTrayPopup() {
   // Destroy any existing popup first
   if (trayPopup && !trayPopup.isDestroyed()) {
@@ -1460,6 +1502,9 @@ function createTray() {
   const iconPath = getTrayIconPath()
   tray = iconPath ? new Tray(iconPath) : new Tray(nativeImage.createEmpty())
   tray.setToolTip('Launchpad')
+  
+  // Update tray icon with dynamic SVG rendering (async, no await)
+  updateTrayIcon()
 
   // Left-click → show/restore the main window
   tray.on('click', () => {
@@ -1516,9 +1561,14 @@ ipcMain.on('tray-popup-close', () => {
 
 // Called by renderer when accent color changes
 ipcMain.on('tray-update-theme', (_, accentHex) => {
+  // ONLY updates tray + taskbar color in memory. No relaunch here.
   currentAccentHex = accentHex || '#3b82f6'
-  // Popup is recreated on next open, so no action needed here
+  const { clearIconCache } = require('./icon-generator')
+  clearIconCache()
+  updateTrayIcon()
 })
+
+
 
 // Called by renderer when a game starts/stops
 ipcMain.on('tray-set-game-running', (_, isRunning) => {
@@ -1531,8 +1581,32 @@ function createWindow() {
   win = new BrowserWindow({
     width: 1600, height: 960, minWidth: 1100, minHeight: 700,
     frame: false, backgroundColor: '#080c12',
-    icon: path.join(__dirname, 'icon.ico'),
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false }
+  })
+  // Use accent-colored .ico from userData if available (written on last accent change).
+  // Must be set before the window is shown — that's the only moment Windows
+  // allows the taskbar button icon to be overridden from the .exe default.
+  {
+    const accentIco  = path.join(app.getPath('userData'), 'launchpad-accent.ico')
+    const staticIco  = path.join(__dirname, 'icon.ico')
+    const iconToUse  = fs.existsSync(accentIco) ? accentIco : (fs.existsSync(staticIco) ? staticIco : null)
+    if (iconToUse) {
+      try { win.setIcon(iconToUse) } catch(e) {}
+    }
+  }
+  // Inject accent color before React renders to prevent the flash of default color.
+  // did-finish-load fires after HTML is parsed but before React hydrates.
+  win.webContents.on('did-finish-load', () => {
+    try {
+      const settings = store['launchpad_settings']
+      let accent = '#3b82f6'
+      if (settings) {
+        const parsed = JSON.parse(settings)
+        // Validate it's a hex color before injecting into the page
+        if (/^#[0-9a-f]{6}$/i.test(parsed.accentColor)) accent = parsed.accentColor
+      }
+      win.webContents.executeJavaScript(`window.__INITIAL_ACCENT__ = ${JSON.stringify(accent)};`)
+    } catch(e) {}
   })
   if (isDev) { win.loadURL('http://localhost:5173'); win.webContents.openDevTools({ mode: 'detach' }) }
   else win.loadURL('file:///' + path.join(__dirname, '../dist/index.html').replace(/\\/g, '/'))
@@ -1566,21 +1640,38 @@ ipcMain.on('win-maximize', () => { if (!win) return; win.isMaximized() ? win.unm
 ipcMain.on('win-close',    () => win?.close())
 
 app.whenReady().then(async () => {
-  createWindow()
-  createTray()
-  // Auto-enable Discord RPC if it was enabled in the previous session
+  // Load saved accent BEFORE creating window so the icon is correct from the start.
+  // On Windows, win.setIcon() after window show is ignored for the taskbar button —
+  // but setting it before show (or via file path at creation time) works.
   try {
     const settings = store['launchpad_settings']
     if (settings) {
       const s = JSON.parse(settings)
-      // Restore accent color for tray icon
-      if (s.accentColor) currentAccentHex = s.accentColor
+      if (s.accentColor) {
+        currentAccentHex = s.accentColor
+        // Pre-render the colored icon to a PNG file so createWindow can use it
+        const logoPath = app.isPackaged
+          ? path.join(process.resourcesPath, 'logo.svg')
+          : path.join(__dirname, '../public/logo.svg')
+        if (fs.existsSync(logoPath)) {
+          try {
+            const { generateIcoBuffer, clearIconCache } = require('./icon-generator')
+            clearIconCache()
+            const icoBuf = await generateIcoBuffer(logoPath, currentAccentHex)
+            const icoOut = path.join(app.getPath('userData'), 'launchpad-accent.ico')
+            fs.writeFileSync(icoOut, icoBuf)
+          } catch(e) { console.warn('[Icon] Pre-render failed:', e.message) }
+        }
+      }
       if (s.discordRPC !== false && s.discordClientId) {
         discordEnabled = true
         setTimeout(connectDiscordRPC, 3000)
       }
     }
   } catch(e) {}
+
+  createWindow()  // now createWindow will pick up the pre-rendered PNG
+  createTray()
 })
 // Don't quit when all windows closed - tray keeps the app alive
 app.on('window-all-closed', () => {

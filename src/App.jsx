@@ -45,11 +45,7 @@ function EmptyLibrary({ onAdd, accent }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 20, padding: 24 }}>
       <div style={{ width: 80, height: 80, borderRadius: 22, background: `${accent}18`, border: `1px solid ${accent}28`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/>
-          <line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/>
-          <path d="M17.32 5H6.68a4 4 0 00-3.978 3.59l-1.37 12.18A3 3 0 004.32 24h15.36a3 3 0 002.99-3.22l-1.37-12.18A4 4 0 0017.32 5z"/>
-        </svg>
+        <img src="/launchpad-logo-circle.png" width={52} height={52} alt="" />
       </div>
       <div style={{ textAlign: 'center', maxWidth: 380 }}>
         <div style={{ fontSize: 24, fontWeight: 700, color: '#e8e8ec', marginBottom: 8 }}>Welcome to Launchpad</div>
@@ -161,6 +157,7 @@ export default function App() {
     return off
   }, [isElectron])
 
+
   const handleApplyScLogs = useCallback(({ sessions, playtime, lastPlayed }) => {
     const g = games.find(g => g.id === selectedGame?.id)
     if (!g) return
@@ -259,13 +256,7 @@ export default function App() {
 
   if (!loaded) return (
     <div style={{ display: 'flex', height: '100vh', background: '#080c12', alignItems: 'center', justifyContent: 'center', gap: 14 }}>
-      <div style={{ width: 34, height: 34, borderRadius: 9, background: accent, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/>
-          <line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/>
-          <path d="M17.32 5H6.68a4 4 0 00-3.978 3.59l-1.37 12.18A3 3 0 004.32 24h15.36a3 3 0 002.99-3.22l-1.37-12.18A4 4 0 0017.32 5z"/>
-        </svg>
-      </div>
+      <img src="/launchpad-logo-circle.png" width={34} height={34} alt="" />
       <div style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: 13, color: C.textDim, letterSpacing: '0.1em' }}>INITIALIZING LAUNCHPAD…</div>
     </div>
   )
