@@ -19,8 +19,8 @@ export function buildGameActivity(game, startTimestamp, showGame = true, showPla
     startTimestamp,
     largeImageKey:  cover || 'launchpad_logo',
     largeImageText: game.title,
-    smallImageKey:  cover ? 'launchpad_logo' : undefined,
-    smallImageText: cover ? 'Launchpad' : undefined,
+    smallImageKey:  'launchpad_logo',
+    smallImageText: 'Launchpad',
     instance:       true,
   }
 }
